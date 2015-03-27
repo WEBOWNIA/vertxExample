@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Adam Barczewski">
+
+    <link rel="stylesheet" href="./resource/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./resource/css/bootstrap-theme.min.css"/>
+    <script type="text/javascript" src="./resource/js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="./resource/js/bootstrap.min.js"></script>
+
+    <script>
+        var wsocket;
+        var serviceLocation = "ws://10.0.0.10:8090/";
+        var $clickCount1;
+        var $clickCount2;
+        var $clickCount3;
+        var $clickCount4;
+
+        function connectToWebserver() {
+            console.log('run connectToWebserver');
+            wsocket = new WebSocket(serviceLocation + 'grid');
+
+            wsocket.onmessage = function onMessageReceived(evt) {
+                console.log('wsocket.onmessage');
+                var msg = JSON.parse(evt.data); // native API
+
+                if(msg.count1 != null) {
+                    $clickCount1.text("" + msg.count1);
+                }
+                if(msg.count2 != null) {
+                    $clickCount2.text("" + msg.count2);
+                }
+                if(msg.count3 != null) {
+                    $clickCount3.text("" + msg.count3);
+                }
+                if(msg.count4 != null) {
+                    $clickCount4.text("" + msg.count4);
+                }
+
+                switch (msg.blockNumber) {
+                    case 1 :
+                        $clickCount1.text("" + msg.countClick);
+                        break;
+                    case 2 :
+                        $clickCount2.text("" + msg.countClick);
+                        break;
+                    case 3 :
+                        $clickCount3.text("" + msg.countClick);
+                        break;
+                    case 4 :
+                        $clickCount4.text("" + msg.countClick);
+                        break;
+                    default :
+                        break;
+                }
+            }
+        }
+
+        function clickButton(blockNumber) {
+            console.log('run clickButton' + blockNumber);
+            var msg = '{"blockNumber":' + blockNumber + ', "countClick":';
+            switch (blockNumber) {
+                case 1 :
+                    msg += $clickCount1.text() + '}';
+                    break;
+                case 2 :
+                    msg += $clickCount2.text() + '}';
+                    break;
+                case 3 :
+                    msg += $clickCount3.text() + '}';
+                    break;
+                case 4 :
+                    msg += $clickCount4.text() + '}';
+                    break;
+                default :
+                    break;
+            }
+            console.log('JSON for send: ' + msg);
+            wsocket.send(msg);
+        }
+
+        $(document).ready(function () {
+            $clickCount1 = $('#clickcount1');
+            $clickCount2 = $('#clickcount2');
+            $clickCount3 = $('#clickcount3');
+            $clickCount4 = $('#clickcount4')
+
+            connectToWebserver();
+
+            $('#block1Button').click(function (evt) {
+                evt.preventDefault();
+                clickButton(1);
+            });
+
+            $('#block2Button').click(function (evt) {
+                evt.preventDefault();
+                clickButton(2);
+            });
+
+            $('#block3Button').click(function (evt) {
+                evt.preventDefault();
+                clickButton(3);
+            });
+
+            $('#block4Button').click(function (evt) {
+                evt.preventDefault();
+                clickButton(4);
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row" style="margin-top: 10px">
+        <div class="col-md-12">
+            <h1>POC WebSocket Grid Ticker
+                <small>Autor: Adam Barczewski <a href="http://webownia.net" target="_blank">webownia.net</a></small>
+            </h1>
+        </div>
+    </div>
+
+    <hr/>
+
+    <form class="form-cliecker">
+
+        <div class="row" style="text-align: center">
+            <div class="col-md-6">
+                <div class="well center-block" style="padding:20%">
+                    <h1><span id="clickcount1">0</span> </h1>
+                    <button type="button" class="btn btn-primary btn-lg" id="block1Button">Conquer</button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="well center-block" style="padding:20%">
+                    <h1><span id="clickcount2">0</span> </h1>
+                    <button type="button" class="btn btn-primary btn-lg" id="block2Button">Conquer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="text-align: center">
+            <div class="col-md-6">
+                <div class="well center-block" style="padding:20%">
+                    <h1><span id="clickcount3">0</span> </h1>
+                    <button type="button" class="btn btn-primary btn-lg" id="block3Button">Conquer</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="well center-block" style="padding:20%">
+                    <h1><span id="clickcount4">0</span> </h1>
+                    <button type="button" class="btn btn-primary btn-lg" id="block4Button">Conquer</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

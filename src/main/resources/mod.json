@@ -1,0 +1,7 @@
+{
+  "main":"net.webownia.vertx.grid.WebServer",
+  "description":"webownia.net Vert.x Websocket Grid ticker",
+  "licenses": ["The Apache Software License Version 2.0"],
+  "author": "Adam Barczewski",
+  "homepage": "http://www.webownia.net"
+}
