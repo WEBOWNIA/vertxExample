@@ -27,6 +27,9 @@ public class WebServer extends Verticle {
     private int count3;
     private int count4;
 
+    private final String HOST = "localhost";
+//    private final String HOST = "10.0.0.10";
+
     @Override
     public void start() {
         final Pattern gridUrlPattern = Pattern.compile("/(\\w+)");
@@ -46,7 +49,7 @@ public class WebServer extends Verticle {
             }
         });
 
-        vertx.createHttpServer().requestHandler(httpRouteMatcher).listen(8080, "10.0.0.10");
+        vertx.createHttpServer().requestHandler(httpRouteMatcher).listen(8080, HOST);
 
         // WebSocket client
         vertx.createHttpServer().websocketHandler(new Handler<ServerWebSocket>() {
@@ -131,6 +134,6 @@ public class WebServer extends Verticle {
                     }
                 });
             }
-        }).listen(8090, "10.0.0.10");
+        }).listen(8090, HOST);
     }
 }
