@@ -14,6 +14,8 @@ import org.vertx.java.platform.Verticle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,10 +24,10 @@ import java.util.regex.Pattern;
  */
 public class WebServer extends Verticle {
 
-    private int count1;
-    private int count2;
-    private int count3;
-    private int count4;
+    private Map<Integer, GridData> gridDataMap = new HashMap<>(0);
+    private Map<String, UserData> userDataMap = new HashMap<>(0);
+    private UserData userData;
+    private final int GRID_SIZE = 25;
 
     private final String HOST = "localhost";
 //    private final String HOST = "10.0.0.10";
@@ -65,18 +67,23 @@ public class WebServer extends Verticle {
                 final String id = ws.textHandlerID();
                 logger.info("registering new connection with id: " + id + " for grid-form: " + grid);
                 vertx.sharedData().getSet("grid." + grid).add(id);
+
                 ObjectMapper m = new ObjectMapper();
                 try {
                     JsonNode rootNode = m.createObjectNode();
-                    ((ObjectNode) rootNode).put("count1", count1);
-                    ((ObjectNode) rootNode).put("count2", count2);
-                    ((ObjectNode) rootNode).put("count3", count3);
-                    ((ObjectNode) rootNode).put("count4", count4);
+                    for (int i = 1; i <= GRID_SIZE; i++) {
+                        if (gridDataMap.size() < GRID_SIZE) {
+                            gridDataMap.put(i, new GridData(i));
+                        } else {
+                            ((ObjectNode) rootNode).put("count" + i, gridDataMap.get(i).countConquer);
+                        }
+                    }
                     String jsonOutput = m.writeValueAsString(rootNode);
                     logger.info("json generated: " + jsonOutput);
                     for (Object chatter : vertx.sharedData().getSet("grid." + grid)) {
                         eventBus.send((String) chatter, jsonOutput);
                     }
+                    userDataMap.put(id, new UserData(id, GRID_SIZE));
                 } catch (IOException e) {
                     ws.reject();
                 }
@@ -86,6 +93,7 @@ public class WebServer extends Verticle {
                     public void handle(final Void event) {
                         logger.info("un-registering connection with id: " + id + " from grid-form: " + grid);
                         vertx.sharedData().getSet("grid." + grid).remove(id);
+                        userDataMap.remove(id);
                     }
                 });
 
@@ -93,36 +101,27 @@ public class WebServer extends Verticle {
                     @Override
                     public void handle(final Buffer data) {
 
+                        userData = userDataMap.get(id);
+                        userData.increment();
+
                         ObjectMapper m = new ObjectMapper();
                         try {
                             JsonNode rootNode = m.readTree(data.toString());
-                            int countClick = rootNode.get("countClick").intValue();
-                            ((ObjectNode) rootNode).remove("countClick");
-                            countClick += 1;
 
                             int blockNumber = rootNode.get("blockNumber").intValue();
-                            switch (blockNumber) {
-                                case 1:
-                                    count1 += 1;
-                                    countClick = count1;
-                                    break;
-                                case 2:
-                                    count2 += 1;
-                                    countClick = count2;
-                                    break;
-                                case 3:
-                                    count3 += 1;
-                                    countClick = count3;
-                                    break;
-                                case 4:
-                                    count4 += 1;
-                                    countClick = count4;
-                                    break;
-                                default:
-                                    break;
-                            }
 
-                            ((ObjectNode) rootNode).put("countClick", countClick);
+                            userData.gridDataMap.get(blockNumber).increment(gridDataMap.get(blockNumber).countConquer);
+                            gridDataMap.get(blockNumber).increment();
+
+                            ((ObjectNode) rootNode).put("countAllClick", userData.countAllClick);
+                            ((ObjectNode) rootNode).put("userId", id);
+
+                            final GridData gridUserData = userData.gridDataMap.get(blockNumber);
+                            final GridData gridData = gridDataMap.get(blockNumber);
+                            gridDataMap.replace(blockNumber, gridData);
+                            ((ObjectNode) rootNode).put("countEven", gridUserData.countEven);
+                            ((ObjectNode) rootNode).put("countConquer", gridData.countConquer);
+
                             String jsonOutput = m.writeValueAsString(rootNode);
                             logger.info("json generated: " + jsonOutput);
                             for (Object chatter : vertx.sharedData().getSet("grid." + grid)) {
