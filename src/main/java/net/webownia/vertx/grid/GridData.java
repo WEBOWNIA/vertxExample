@@ -5,18 +5,10 @@ package net.webownia.vertx.grid;
  */
 public class GridData {
     protected int number;
-    protected int countEven;
     protected int countConquer;
 
     public GridData(int number) {
         this.number = number;
-    }
-
-    protected void increment(int countClick) {
-        countConquer += 1;
-        if ((countClick % 2) == 0) {
-            countEven += 1;
-        }
     }
 
     protected void increment() {
@@ -38,7 +30,6 @@ public class GridData {
     @Override
     public int hashCode() {
         int result = number;
-        result = 31 * result + countEven;
         return result;
     }
 }

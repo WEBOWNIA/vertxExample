@@ -9,6 +9,7 @@ import java.util.Map;
 public class UserData {
     private String userId;
     protected int countAllClick;
+    protected int countEven;
     protected Map<Integer, GridData> gridDataMap = new HashMap<>(0);
 
     public UserData(String userId, int sizeGrid) {
@@ -20,5 +21,11 @@ public class UserData {
 
     protected void increment() {
         countAllClick += 1;
+    }
+
+    protected void increment(int countClick) {
+        if (countClick > 0 && (countClick % 2) == 0) {
+            countEven += 1;
+        }
     }
 }

@@ -30,7 +30,8 @@ public class WebServer extends Verticle {
     private final int GRID_SIZE = 25;
 
     private final String HOST = "localhost";
-//    private final String HOST = "10.0.0.10";
+    //    private final String HOST = "10.0.0.10";
+    private final int PORT = 8080;
 
     @Override
     public void start() {
@@ -51,7 +52,7 @@ public class WebServer extends Verticle {
             }
         });
 
-        vertx.createHttpServer().requestHandler(httpRouteMatcher).listen(8080, HOST);
+        vertx.createHttpServer().requestHandler(httpRouteMatcher).listen(PORT, HOST);
 
         // WebSocket client
         vertx.createHttpServer().websocketHandler(new Handler<ServerWebSocket>() {
@@ -71,19 +72,19 @@ public class WebServer extends Verticle {
                 ObjectMapper m = new ObjectMapper();
                 try {
                     JsonNode rootNode = m.createObjectNode();
+                    userDataMap.put(id, new UserData(id, GRID_SIZE));
                     for (int i = 1; i <= GRID_SIZE; i++) {
                         if (gridDataMap.size() < GRID_SIZE) {
                             gridDataMap.put(i, new GridData(i));
-                        } else {
-                            ((ObjectNode) rootNode).put("count" + i, gridDataMap.get(i).countConquer);
                         }
+                        ((ObjectNode) rootNode).put("count" + i, gridDataMap.get(i).countConquer);
                     }
+                    ((ObjectNode) rootNode).put("userId", id);
                     String jsonOutput = m.writeValueAsString(rootNode);
                     logger.info("json generated: " + jsonOutput);
                     for (Object chatter : vertx.sharedData().getSet("grid." + grid)) {
                         eventBus.send((String) chatter, jsonOutput);
                     }
-                    userDataMap.put(id, new UserData(id, GRID_SIZE));
                 } catch (IOException e) {
                     ws.reject();
                 }
@@ -109,17 +110,16 @@ public class WebServer extends Verticle {
                             JsonNode rootNode = m.readTree(data.toString());
 
                             int blockNumber = rootNode.get("blockNumber").intValue();
+                            userData.increment(gridDataMap.get(blockNumber).countConquer);
 
-                            userData.gridDataMap.get(blockNumber).increment(gridDataMap.get(blockNumber).countConquer);
                             gridDataMap.get(blockNumber).increment();
 
                             ((ObjectNode) rootNode).put("countAllClick", userData.countAllClick);
                             ((ObjectNode) rootNode).put("userId", id);
 
-                            final GridData gridUserData = userData.gridDataMap.get(blockNumber);
                             final GridData gridData = gridDataMap.get(blockNumber);
                             gridDataMap.replace(blockNumber, gridData);
-                            ((ObjectNode) rootNode).put("countEven", gridUserData.countEven);
+                            ((ObjectNode) rootNode).put("countEven", userData.countEven);
                             ((ObjectNode) rootNode).put("countConquer", gridData.countConquer);
 
                             String jsonOutput = m.writeValueAsString(rootNode);
@@ -133,6 +133,6 @@ public class WebServer extends Verticle {
                     }
                 });
             }
-        }).listen(8090, HOST);
+        }).listen(PORT+10, HOST);
     }
 }

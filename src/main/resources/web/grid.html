@@ -15,8 +15,7 @@
 
     <script>
         var wsocket;
-        var serviceLocation = "ws://localhost:8090/";
-        //        var serviceLocation = "ws://10.0.0.10:8090/";
+        var serviceLocation = "ws://"+window.location.hostname+":";
         var clickCount = {};
         var $clickCount1;
         var $clickCount2;
@@ -43,36 +42,15 @@
         var $clickCount23;
         var $clickCount24;
         var $clickCount25;
-        var $clickCount1Even;
-        var $clickCount2Even;
-        var $clickCount3Even;
-        var $clickCount4Even;
-        var $clickCount5Even;
-        var $clickCount6Even;
-        var $clickCount7Even;
-        var $clickCount8Even;
-        var $clickCount9Even;
-        var $clickCount10Even;
-        var $clickCount11Even;
-        var $clickCount12Even;
-        var $clickCount13Even;
-        var $clickCount14Even;
-        var $clickCount15Even;
-        var $clickCount16Even;
-        var $clickCount17Even;
-        var $clickCount18Even;
-        var $clickCount19Even;
-        var $clickCount20Even;
-        var $clickCount21Even;
-        var $clickCount22Even;
-        var $clickCount23Even;
-        var $clickCount24Even;
-        var $clickCount25Even;
+        var $clickCountEven;
         var $countAllConquers;
         var userId;
 
         function connectToWebserver() {
             console.log('run connectToWebserver');
+            var port = parseInt(window.location.port) + 10
+            serviceLocation += port + "/";
+            console.log('serviceLocation url: '+serviceLocation);
             wsocket = new WebSocket(serviceLocation + 'grid');
 
             wsocket.onmessage = function onMessageReceived(evt) {
@@ -243,86 +221,9 @@
                     userId = msg.userId;
                 }
 
-                if (userId != null && userId == msg.userId) {
-
-                    switch (msg.blockNumber) {
-                        case 1 :
-                            $clickCount1Even.text("" + msg.countEven);
-                            break;
-                        case 2 :
-                            $clickCount2Even.text("" + msg.countEven);
-                            break;
-                        case 3 :
-                            $clickCount3Even.text("" + msg.countEven);
-                            break;
-                        case 4 :
-                            $clickCount4Even.text("" + msg.countEven);
-                            break;
-                        case 5 :
-                            $clickCount5Even.text("" + msg.countEven);
-                            break;
-                        case 6 :
-                            $clickCount6Even.text("" + msg.countEven);
-                            break;
-                        case 7 :
-                            $clickCount7Even.text("" + msg.countEven);
-                            break;
-                        case 8 :
-                            $clickCount8Even.text("" + msg.countEven);
-                            break;
-                        case 9 :
-                            $clickCount9Even.text("" + msg.countEven);
-                            break;
-                        case 10 :
-                            $clickCount10Even.text("" + msg.countEven);
-                            break;
-                        case 11 :
-                            $clickCount11Even.text("" + msg.countEven);
-                            break;
-                        case 12 :
-                            $clickCount12Even.text("" + msg.countEven);
-                            break;
-                        case 13 :
-                            $clickCount13Even.text("" + msg.countEven);
-                            break;
-                        case 14 :
-                            $clickCount14Even.text("" + msg.countEven);
-                            break;
-                        case 15 :
-                            $clickCount15Even.text("" + msg.countEven);
-                            break;
-                        case 16 :
-                            $clickCount16Even.text("" + msg.countEven);
-                            break;
-                        case 17 :
-                            $clickCount17Even.text("" + msg.countEven);
-                            break;
-                        case 18 :
-                            $clickCount18Even.text("" + msg.countEven);
-                            break;
-                        case 19 :
-                            $clickCount19Even.text("" + msg.countEven);
-                            break;
-                        case 20 :
-                            $clickCount20Even.text("" + msg.countEven);
-                            break;
-                        case 21 :
-                            $clickCount21Even.text("" + msg.countEven);
-                            break;
-                        case 22 :
-                            $clickCount22Even.text("" + msg.countEven);
-                            break;
-                        case 23 :
-                            $clickCount23Even.text("" + msg.countEven);
-                            break;
-                        case 24 :
-                            $clickCount24Even.text("" + msg.countEven);
-                            break;
-                        case 25 :
-                            $clickCount25Even.text("" + msg.countEven);
-                            break;
-                        default :
-                            break;
+                if (userId == msg.userId) {
+                    if (msg.countEven != null) {
+                        $clickCountEven.text("" + msg.countEven);
                     }
 
                     if (msg.countAllClick != null) {
@@ -365,31 +266,7 @@
             $clickCount23 = $('#clickcount23');
             $clickCount24 = $('#clickcount24');
             $clickCount25 = $('#clickcount25');
-            $clickCount1Even = $('#count1Even');
-            $clickCount2Even = $('#count2Even');
-            $clickCount3Even = $('#count3Even');
-            $clickCount4Even = $('#count4Even');
-            $clickCount5Even = $('#count5Even');
-            $clickCount6Even = $('#count6Even');
-            $clickCount7Even = $('#count7Even');
-            $clickCount8Even = $('#count8Even');
-            $clickCount9Even = $('#count9Even');
-            $clickCount10Even = $('#count10Even');
-            $clickCount11Even = $('#count11Even');
-            $clickCount12Even = $('#count12Even');
-            $clickCount13Even = $('#count13Even');
-            $clickCount14Even = $('#count14Even');
-            $clickCount15Even = $('#count15Even');
-            $clickCount16Even = $('#count16Even');
-            $clickCount17Even = $('#count17Even');
-            $clickCount18Even = $('#count18Even');
-            $clickCount19Even = $('#count19Even');
-            $clickCount20Even = $('#count20Even');
-            $clickCount21Even = $('#count21Even');
-            $clickCount22Even = $('#count22Even');
-            $clickCount23Even = $('#count23Even');
-            $clickCount24Even = $('#count24Even');
-            $clickCount25Even = $('#count25Even');
+            $clickCountEven = $('#countAllEven');
             $countAllConquers = $('#countAllClick');
 
             connectToWebserver();
@@ -554,7 +431,12 @@
 
     <form class="form-cliecker">
         <div class="row">
-            <h3>Your all conquers: <span id="countAllClick">0</span></h3>
+            <div class="col-lg-15">
+                <h4>Your all conquers: <span id="countAllClick">0</span></h4>
+            </div>
+            <div class="col-lg-15">
+                <h4>Your all even conquers: <span id="countAllEven">0</span></h4>
+            </div>
         </div>
 
         <!--ROW 1-->
@@ -563,7 +445,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount1">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block1Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count1Even">0</span></h6>
                 </div>
             </div>
 
@@ -571,7 +452,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount2">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block2Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count2Even">0</span></h6>
                 </div>
             </div>
 
@@ -579,7 +459,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount3">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block3Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count3Even">0</span></h6>
                 </div>
             </div>
 
@@ -587,7 +466,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount4">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block4Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count4Even">0</span></h6>
                 </div>
             </div>
 
@@ -595,7 +473,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount5">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block5Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count5Even">0</span></h6>
                 </div>
             </div>
         </div>
@@ -606,7 +483,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount6">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block6Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count6Even">0</span></h6>
                 </div>
             </div>
 
@@ -614,7 +490,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount7">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block7Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count7Even">0</span></h6>
                 </div>
             </div>
 
@@ -622,7 +497,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount8">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block8Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count8Even">0</span></h6>
                 </div>
             </div>
 
@@ -630,7 +504,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount9">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block9Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count9Even">0</span></h6>
                 </div>
             </div>
 
@@ -638,7 +511,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount10">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block10Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count10Even">0</span></h6>
                 </div>
             </div>
         </div>
@@ -649,7 +521,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount11">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block11Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count11Even">0</span></h6>
                 </div>
             </div>
 
@@ -657,7 +528,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount12">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block12Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count12Even">0</span></h6>
                 </div>
             </div>
 
@@ -665,7 +535,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount13">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block13Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count13Even">0</span></h6>
                 </div>
             </div>
 
@@ -673,7 +542,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount14">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block14Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count14Even">0</span></h6>
                 </div>
             </div>
 
@@ -681,7 +549,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount15">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block15Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count15Even">0</span></h6>
                 </div>
             </div>
         </div>
@@ -692,7 +559,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount16">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block16Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count16Even">0</span></h6>
                 </div>
             </div>
 
@@ -700,7 +566,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount17">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block17Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count17Even">0</span></h6>
                 </div>
             </div>
 
@@ -708,7 +573,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount18">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block18Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count18Even">0</span></h6>
                 </div>
             </div>
 
@@ -716,7 +580,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount19">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block19Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count19Even">0</span></h6>
                 </div>
             </div>
 
@@ -724,7 +587,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount20">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block20Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count20Even">0</span></h6>
                 </div>
             </div>
         </div>
@@ -735,7 +597,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount21">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block21Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count21Even">0</span></h6>
                 </div>
             </div>
 
@@ -743,7 +604,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount22">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block22Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count22Even">0</span></h6>
                 </div>
             </div>
 
@@ -751,7 +611,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount23">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block23Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count23Even">0</span></h6>
                 </div>
             </div>
 
@@ -759,7 +618,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount24">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block24Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count24Even">0</span></h6>
                 </div>
             </div>
 
@@ -767,7 +625,6 @@
                 <div class="well center-block" style="padding:10%">
                     <h4>Conquers: <span id="clickcount25">0</span></h4>
                     <button type="button" class="btn btn-primary btn-lg" id="block25Button">Conquer</button>
-                    <h6>Your even conquers: <span id="count25Even">0</span></h6>
                 </div>
             </div>
         </div>
